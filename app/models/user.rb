@@ -272,7 +272,7 @@ class User
     pune_employee_ids = employee_id_array.select {|id| id <= 9000}
 
     if self.employee_detail.try(:location) == "Plano"
-      emp_id = usa_employee_ids.empty? ? 9000 : usa_employee_ids.max  
+      emp_id = usa_employee_ids.empty? ? 9000 : usa_employee_ids.max
     else
       emp_id = pune_employee_ids.empty? ? 0 : pune_employee_ids.max
     end
