@@ -83,6 +83,9 @@ class User
     self.website_sequence_number = (User.max(:website_sequence_number) || 0) + 1
   end
 
+  after_update do
+    self.reject_future_leaves if self.status == 'resigned'
+  end
 
   slug :name
   # Hack for Devise as specified in https://github.com/plataformatec/devise/issues/2949#issuecomment-40520236
