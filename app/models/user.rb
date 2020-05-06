@@ -84,7 +84,7 @@ class User
   end
 
   after_update do
-    self.reject_future_leaves if self.status == 'resigned'
+    reject_future_leaves if (status_changed? && status == 'resigned')
   end
 
   slug :name
