@@ -84,7 +84,13 @@ class User
   end
 
   after_update do
-    reject_future_leaves if (status_changed? && status == 'resigned')
+    if (status_changed? && status == 'resigned')
+      # handled all notification related records
+      reject_future_leaves
+      set_user_project_entries_inactive
+      remove_from_manager_ids
+      remove_from_notification_emails
+    end
   end
 
   slug :name
@@ -121,6 +127,7 @@ class User
     notified_users = notification_emails
     UserMailer.delay.leave_application(self.email, notified_users, leave_application_id)
   end
+
   def role?(role)
     self.role == role
   end
@@ -190,7 +197,7 @@ class User
   def reject_future_leaves
     return if self.status == 'approved'
     LeaveApplication.where(:start_at.gte => Date.today, user: self).each do |leave_application|
-      leave_application.update(leave_status: 'Rejected')
+      leave_application.update(leave_status: 'Rejected', reject_reason: 'Resigned')
     end
   end
 
@@ -324,18 +331,18 @@ class User
     CSV.generate(options) do |csv|
       csv << column_names.collect(&:titleize)
       all.map do |user|
-      tech_skills = user.public_profile.technical_skills.join(', ') if user.public_profile.technical_skills.present?
-      csv << [
-        user.public_profile.name,
-        user.private_profile.try(:date_of_joining),
-        user.private_profile.try(:previous_work_experience),
-        user.try(:experience_as_of_today),
-        user.employee_detail.designation.try(:name),
-        user.employee_detail.is_billable? ? 'Yes' : 'No',
-        tech_skills,
-        user.public_profile.skills,
-        user.projects.collect(&:name).join(', ')
-      ]
+        tech_skills = user.public_profile.technical_skills.join(', ') if user.public_profile.technical_skills.present?
+        csv << [
+          user.public_profile.name,
+          user.private_profile.try(:date_of_joining),
+          user.private_profile.try(:previous_work_experience),
+          user.try(:experience_as_of_today),
+          user.employee_detail.designation.try(:name),
+          user.employee_detail.is_billable? ? 'Yes' : 'No',
+          tech_skills,
+          user.public_profile.skills,
+          user.projects.collect(&:name).join(', ')
+        ]
       end
     end
   end

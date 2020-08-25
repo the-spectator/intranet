@@ -1,7 +1,7 @@
 namespace :resigned_employees do
   desc "Reject all leaves of resigned employees"
   task reject_future_leaves: :environment do
-    User.where(:status.ne => 'approved').each do |user|
+    User.where(status: 'resigned').each do |user|
       user.reject_future_leaves
       p user.email
     end
@@ -9,7 +9,7 @@ namespace :resigned_employees do
 
   desc "Remove resigned employees from notification emails, UserProject and manager_ids of Project"
   task remove_from_project_records_and_notification_emails: :environment do
-    User.where(status: "pending").each do |user|
+    User.where(status: "resigned").each do |user|
       user.set_user_project_entries_inactive
       user.remove_from_manager_ids
       user.remove_from_notification_emails
@@ -21,6 +21,7 @@ namespace :resigned_employees do
   task change_status_of_resigned_employees: :environment do
     User.where(status: "pending").each do |user|
       user.update(status: "resigned")
+      p user.email
     end
   end
 
@@ -29,6 +30,7 @@ namespace :resigned_employees do
     email_ids = []
     User.where(:email.in => email_ids).each do |user|
       user.update(status: 'resigned')
+      p user.email
     end
   end
 end
