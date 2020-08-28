@@ -10,21 +10,3 @@
   %br
   %br
   = f.submit 'Update', class: 'btn controls'
-:css
-  .make-switch{ height: 29px; margin-left: 18px;}
-
-:javascript
-  $(document).ready(function(){
-    if ($("#user_status option:selected").val() == "resigned") {
-          $("#reason_of_resignation").show()
-        }
-    else {
-      $("#reason_of_resignation").hide()
-    }
-    $("#user_status").change(function(){
-        if ($("#user_status option:selected").val() == "resigned") {
-          $("#reason_of_resignation").fadeIn()
-        }
-    })
-  })
-  

@@ -58,3 +58,12 @@ $(document).ready ->
     else
       window.location.href = '/users.xlsx'+'?'+ 'status=all'
 
+  if $('#user_status option:selected').val() == 'resigned'
+    $('#reason_of_resignation').show()
+  else
+    $('#reason_of_resignation').hide()
+  $('#user_status').change ->
+    if $('#user_status option:selected').val() == 'resigned'
+      $('#reason_of_resignation').fadeIn()
+    else
+      $('#reason_of_resignation').fadeOut()
